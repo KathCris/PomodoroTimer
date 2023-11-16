@@ -8,7 +8,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   body{
-    background: #333;
+    background: ${props => props.theme.primary};
     color: #fff;
   }
 `
