@@ -8,7 +8,13 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   body{
-    background: ${props => props.theme.primary};
-    color: #fff;
+    background: ${props => props.theme['gray-900']};
+    color: ${props => props.theme['gray-300']};
+  }
+
+  body, input, textarea, button {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 488;
+    font-size: 1rem;
   }
 `
