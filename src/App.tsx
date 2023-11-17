@@ -13,7 +13,6 @@ export function App() {
       <BrowserRouter>
         <Router />
       </BrowserRouter>
-      <h1>Hello world</h1>
       <GlobalStyle />
     </ThemeProvider>
   )
