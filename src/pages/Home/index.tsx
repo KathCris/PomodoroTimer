@@ -1,5 +1,5 @@
-import { Play } from "phosphor-react";
-import { CountdowmContainer, FormContainer, HomeContainer, MinuteAmountInput, Separator, StartCountdownButton, TaskInput } from "./style";
+import { HandPalm, Play } from "phosphor-react";
+import { CountdowmContainer, FormContainer, HomeContainer, MinuteAmountInput, Separator, StartCountdownButton, StopCountdownButton, TaskInput } from "./style";
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
@@ -19,6 +19,7 @@ interface Cycle {
   task: string
   minutesAmount: number
   startDate: Date 
+  dateInterrupt?: Date 
 }
 
 export function Home() {
@@ -34,23 +35,6 @@ export function Home() {
       minutesAmount: 0,
     }
   })
-
-  function handleCreateNewCycle (data: neyCycleFormData) {
-   const id = String(new Date().getTime())
-
-    const newCycle: Cycle = {
-      id,
-      task: data.task,
-      minutesAmount: data.minutesAmount,
-      startDate: new Date(),
-    }
-
-    setCycles(state => [...state, newCycle])
-    setActiveCycle(id)
-
-    reset()
-    setAmountSecondsPassed(0)
-  }
   
   const task = watch('task')
   const isSubmitDisabled = !task
@@ -67,6 +51,37 @@ export function Home() {
   const minutes = String(minutesAmount).padStart(2, '0')
   const seconds = String(secondsAmount).padStart(2, '0')
   // End count seconds and minutes for timer
+
+  function handleCreateNewCycle (data: neyCycleFormData) {
+    const id = String(new Date().getTime())
+ 
+     const newCycle: Cycle = {
+       id,
+       task: data.task,
+       minutesAmount: data.minutesAmount,
+       startDate: new Date(),
+     }
+ 
+     setCycles(state => [...state, newCycle])
+     setActiveCycle(id)
+ 
+     reset()
+     setAmountSecondsPassed(0)
+   }
+ 
+   function handleInterruptedCycle () {
+     setCycles(
+       cycles.map((cycle) => {
+         if (cycle.id === nowActiveCycle?.id) {
+           return { ...cycle, interruptedDate: new Date()}
+         } else {
+           return cycle
+         }
+       })
+     )
+   
+     setActiveCycle(null)
+   }
 
   useEffect(() => {
     let interval: number
@@ -100,6 +115,7 @@ export function Home() {
           id="task" 
           placeholder="Dê um nome para o seu projeto" 
           {...register('task')}
+          disabled={!!nowActiveCycle}
           />
 
           <label htmlFor="minuteAmount"> Durante </label>
@@ -111,6 +127,7 @@ export function Home() {
           min={5}
           max={60} 
           {...register('minutesAmount', {valueAsNumber: true})} 
+          disabled={!!nowActiveCycle}
           />
 
           <span>Minutos.</span>
@@ -124,10 +141,17 @@ export function Home() {
           <span>{seconds[1]}</span>
         </CountdowmContainer>
 
-        <StartCountdownButton disabled={isSubmitDisabled} type="submit">
-          <Play size={24} />
-          Começar
-        </StartCountdownButton>
+        {nowActiveCycle ? (
+          <StopCountdownButton onClick={() => handleInterruptedCycle()} type='button'>
+            <HandPalm size={24} />
+            Interromper
+          </StopCountdownButton> 
+        ) : (
+          <StartCountdownButton disabled={isSubmitDisabled} type="submit">
+            <Play size={24} />
+            Começar
+          </StartCountdownButton>
+        )}
 
       </form>
     </HomeContainer>
