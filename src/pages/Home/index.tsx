@@ -49,6 +49,7 @@ export function Home() {
     setActiveCycle(id)
 
     reset()
+    setAmountSecondsPassed(0)
   }
   
   const task = watch('task')
@@ -68,12 +69,26 @@ export function Home() {
   // End count seconds and minutes for timer
 
   useEffect(() => {
+    let interval: number
+
     if (nowActiveCycle) {
-      setInterval(() => {
+      interval = setInterval(() => {
         setAmountSecondsPassed(differenceInSeconds(new Date(), nowActiveCycle.startDate))
       }, 1000)
     }
+
+    return () => {
+      clearInterval(interval)
+    }
   }, [nowActiveCycle])
+
+
+  //UseEffect to show counter in the tab title
+  useEffect(() => {
+    if(nowActiveCycle) {
+      document.title = `${minutes}:${seconds}`
+    }
+  }, [minutes, seconds, nowActiveCycle])
 
 
   return (
