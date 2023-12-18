@@ -20,6 +20,7 @@ interface Cycle {
   minutesAmount: number
   startDate: Date 
   dateInterrupt?: Date 
+  finishedDate?: Date
 }
 
 export function Home() {
@@ -70,8 +71,7 @@ export function Home() {
    }
  
    function handleInterruptedCycle () {
-     setCycles(
-       cycles.map((cycle) => {
+     setCycles(state => state.map((cycle) => {
          if (cycle.id === nowActiveCycle?.id) {
            return { ...cycle, interruptedDate: new Date()}
          } else {
@@ -88,14 +88,31 @@ export function Home() {
 
     if (nowActiveCycle) {
       interval = setInterval(() => {
-        setAmountSecondsPassed(differenceInSeconds(new Date(), nowActiveCycle.startDate))
+        const secondsDifference = differenceInSeconds(new Date(), nowActiveCycle.startDate)
+        
+        if (secondsDifference >= totalSeconds) {
+          setCycles(state => state.map((cycle) => {
+              if (cycle.id === nowActiveCycle?.id) {
+                return { ...cycle, finishedDate: new Date()}
+              } else {
+                return cycle
+              }
+            })
+          ) 
+          
+          setAmountSecondsPassed(totalSeconds)
+          clearInterval(interval)
+
+        } else {
+          setAmountSecondsPassed(secondsDifference)
+        }
       }, 1000)
     }
 
     return () => {
       clearInterval(interval)
     }
-  }, [nowActiveCycle])
+  }, [nowActiveCycle, totalSeconds])
 
 
   //UseEffect to show counter in the tab title
