@@ -1,10 +1,12 @@
 import { HandPalm, Play } from "phosphor-react";
-import { CountdowmContainer, FormContainer, HomeContainer, MinuteAmountInput, Separator, StartCountdownButton, StopCountdownButton, TaskInput } from "./style";
+import { HomeContainer, StartCountdownButton, StopCountdownButton } from "./style";
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
 import { useEffect, useState } from "react";
 import { differenceInSeconds } from 'date-fns'
+import { CountDown } from "./Componentes/CountDown";
+import { NewCycleForm } from "./Componentes/NewCycleForm";
 
 
 const newCycleFormValidationSchema = zod.object({
@@ -126,37 +128,10 @@ export function Home() {
   return (
     <HomeContainer>
       <form onSubmit={handleSubmit(handleCreateNewCycle)} action="">
-        <FormContainer>
-          <label htmlFor="task">For trabalhar em</label>
-          <TaskInput 
-          id="task" 
-          placeholder="Dê um nome para o seu projeto" 
-          {...register('task')}
-          disabled={!!nowActiveCycle}
-          />
+        <NewCycleForm />
+        <CountDown />
 
-          <label htmlFor="minuteAmount"> Durante </label>
-          <MinuteAmountInput 
-          type="number" 
-          id="minuteAmount" 
-          placeholder="00"
-          step={5}
-          min={5}
-          max={60} 
-          {...register('minutesAmount', {valueAsNumber: true})} 
-          disabled={!!nowActiveCycle}
-          />
 
-          <span>Minutos.</span>
-        </FormContainer>
-
-        <CountdowmContainer>
-          <span>{minutes[0]}</span>
-          <span>{minutes[1]}</span>
-          <Separator>:</Separator>
-          <span>{seconds[0]}</span>
-          <span>{seconds[1]}</span>
-        </CountdowmContainer>
 
         {nowActiveCycle ? (
           <StopCountdownButton onClick={() => handleInterruptedCycle()} type='button'>
@@ -169,7 +144,6 @@ export function Home() {
             Começar
           </StartCountdownButton>
         )}
-
       </form>
     </HomeContainer>
   )
