@@ -1,14 +1,28 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { CountdowmContainer, Separator } from "./style";
-import { CyclesContext } from "../..";
+import { differenceInSeconds } from 'date-fns'
+import { CyclesContext } from "../../../../contexts/CyclesContext";
 
 
 export function CountDown () {
 
-  const { cycles, nowActiveCycle } = useContext(CyclesContext)
-
-  const [amountSecondsPassed, setAmountSecondsPassed] = useState(0)
+  const { 
+    nowActiveCycle, 
+    amountSecondsPassed, 
+    markCurrentCyclesAsFinished, 
+    setSecondsPassed 
+  } = useContext(CyclesContext)
+  
+  // Start count seconds and minutes for timer
   const totalSeconds = nowActiveCycle ? nowActiveCycle.minutesAmount * 60 : 0
+  const currentSeconds = nowActiveCycle ? totalSeconds - amountSecondsPassed : 0
+
+  const minutesAmount =  Math.floor(currentSeconds/ 60)
+  const secondsAmount = currentSeconds % 60
+
+  const minutes = String(minutesAmount).padStart(2, '0')
+  const seconds = String(secondsAmount).padStart(2, '0')
+  // End count seconds and minutes for timer
 
 
   useEffect(() => {
@@ -19,20 +33,13 @@ export function CountDown () {
         const secondsDifference = differenceInSeconds(new Date(), nowActiveCycle.startDate)
         
         if (secondsDifference >= totalSeconds) {
-          setCycles(state => state.map((cycle) => {
-              if (cycle.id === nowActiveCycle?.id) {
-                return { ...cycle, finishedDate: new Date()}
-              } else {
-                return cycle
-              }
-            })
-          ) 
+          markCurrentCyclesAsFinished()
           
-          setAmountSecondsPassed(totalSeconds)
+          setSecondsPassed(totalSeconds)
           clearInterval(interval)
 
         } else {
-          setAmountSecondsPassed(secondsDifference)
+          setSecondsPassed(secondsDifference)
         }
       }, 1000)
     }
@@ -40,7 +47,14 @@ export function CountDown () {
     return () => {
       clearInterval(interval)
     }
-  }, [nowActiveCycle, totalSeconds])
+  }, [nowActiveCycle, totalSeconds, markCurrentCyclesAsFinished, setSecondsPassed])
+
+
+  useEffect(() => {
+    if(nowActiveCycle) {
+      document.title = `${minutes}:${seconds}`
+    }
+  }, [minutes, seconds, nowActiveCycle])
 
 
     return (
