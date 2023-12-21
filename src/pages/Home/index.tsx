@@ -1,20 +1,20 @@
 import { HandPalm, Play } from "phosphor-react";
 import { HomeContainer, StartCountdownButton, StopCountdownButton } from "./style";
 import { useForm } from "react-hook-form";
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as zod from 'zod';
-import { useEffect, useState } from "react";
+// import { zodResolver } from '@hookform/resolvers/zod';
+// import * as zod from 'zod';
+import { createContext, useEffect, useState } from "react";
 import { differenceInSeconds } from 'date-fns'
 import { CountDown } from "./Componentes/CountDown";
 import { NewCycleForm } from "./Componentes/NewCycleForm";
 
 
-const newCycleFormValidationSchema = zod.object({
-  task: zod.string().min(1, 'Informe a tarefa'),
-  minutesAmount: zod.number().min(5, 'O ciclo precisa ser de no minimo 5 minutos').max(60, 'O ciclo precisa ser de no maximo 60 minutos'),
-})
+// const newCycleFormValidationSchema = zod.object({
+//   task: zod.string().min(1, 'Informe a tarefa'),
+//   minutesAmount: zod.number().min(5, 'O ciclo precisa ser de no minimo 5 minutos').max(60, 'O ciclo precisa ser de no maximo 60 minutos'),
+// })
 
-type neyCycleFormData = zod.infer<typeof newCycleFormValidationSchema>
+// type neyCycleFormData = zod.infer<typeof newCycleFormValidationSchema>
 
 interface Cycle {
   id: string
@@ -25,19 +25,28 @@ interface Cycle {
   finishedDate?: Date
 }
 
-export function Home() {
 
+interface CycleContextType {
+  cycles: Cycle | undefined
+  activeCycle: Cycle | undefined
+  nowActiveCycle: string
+}
+
+export const CyclesContext = createContext({} as CycleContextType)
+
+
+export function Home() {
   const [cycles, setCycles] = useState<Cycle[]>([]) 
   const [activeCycle, setActiveCycle] = useState<string | null>(null)
-  const [amountSecondsPassed, setAmountSecondsPassed] = useState(0)
+  // const [amountSecondsPassed, setAmountSecondsPassed] = useState(0)
 
-  const { register, handleSubmit, watch, reset } = useForm({
-    resolver: zodResolver(newCycleFormValidationSchema),
-    defaultValues: {
-      task: '',
-      minutesAmount: 0,
-    }
-  })
+  // const { register, handleSubmit, watch, reset } = useForm({
+  //   resolver: zodResolver(newCycleFormValidationSchema),
+  //   defaultValues: {
+  //     task: '',
+  //     minutesAmount: 0,
+  //   }
+  // })
   
   const task = watch('task')
   const isSubmitDisabled = !task
@@ -45,7 +54,8 @@ export function Home() {
   const nowActiveCycle = cycles.find(cycle => cycle.id === activeCycle)
 
   // Start count seconds and minutes for timer
-  const totalSeconds = nowActiveCycle ? nowActiveCycle.minutesAmount * 60 : 0
+
+  // const totalSeconds = nowActiveCycle ? nowActiveCycle.minutesAmount * 60 : 0
   const currentSeconds = nowActiveCycle ? totalSeconds - amountSecondsPassed : 0
 
   const minutesAmount =  Math.floor(currentSeconds/ 60)
@@ -85,39 +95,41 @@ export function Home() {
      setActiveCycle(null)
    }
 
-  useEffect(() => {
-    let interval: number
+  // useEffect(() => {
+  //   let interval: number
 
-    if (nowActiveCycle) {
-      interval = setInterval(() => {
-        const secondsDifference = differenceInSeconds(new Date(), nowActiveCycle.startDate)
+  //   if (nowActiveCycle) {
+  //     interval = setInterval(() => {
+  //       const secondsDifference = differenceInSeconds(new Date(), nowActiveCycle.startDate)
         
-        if (secondsDifference >= totalSeconds) {
-          setCycles(state => state.map((cycle) => {
-              if (cycle.id === nowActiveCycle?.id) {
-                return { ...cycle, finishedDate: new Date()}
-              } else {
-                return cycle
-              }
-            })
-          ) 
+  //       if (secondsDifference >= totalSeconds) {
+  //         setCycles(state => state.map((cycle) => {
+  //             if (cycle.id === nowActiveCycle?.id) {
+  //               return { ...cycle, finishedDate: new Date()}
+  //             } else {
+  //               return cycle
+  //             }
+  //           })
+  //         ) 
           
-          setAmountSecondsPassed(totalSeconds)
-          clearInterval(interval)
+  //         setAmountSecondsPassed(totalSeconds)
+  //         clearInterval(interval)
 
-        } else {
-          setAmountSecondsPassed(secondsDifference)
-        }
-      }, 1000)
-    }
+  //       } else {
+  //         setAmountSecondsPassed(secondsDifference)
+  //       }
+  //     }, 1000)
+  //   }
 
-    return () => {
-      clearInterval(interval)
-    }
-  }, [nowActiveCycle, totalSeconds])
+  //   return () => {
+  //     clearInterval(interval)
+  //   }
+  // }, [nowActiveCycle, totalSeconds])
 
 
   //UseEffect to show counter in the tab title
+  
+  
   useEffect(() => {
     if(nowActiveCycle) {
       document.title = `${minutes}:${seconds}`
@@ -128,8 +140,11 @@ export function Home() {
   return (
     <HomeContainer>
       <form onSubmit={handleSubmit(handleCreateNewCycle)} action="">
-        <NewCycleForm />
-        <CountDown />
+
+        <CyclesContext.Provider value={{activeCycle?, nowActiveCycle?}>
+          <NewCycleForm />
+          <CountDown />
+        </CyclesContext.Provider>
 
 
 
