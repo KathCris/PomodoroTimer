@@ -11,7 +11,7 @@ interface CreateCycleData {
 interface CycleContextType {
   cycles: Cycle[]
   nowActiveCycle: Cycle | undefined
-  activeCycle: string | null
+  activeCycleId: string | null
   amountSecondsPassed: number
   markCurrentCyclesAsFinished: () => void
   setSecondsPassed: (seconds: number) => void
@@ -28,8 +28,6 @@ interface CyclesContextProviderProps {
 
 
 export function CyclesContextProvider ({ children }: CyclesContextProviderProps) {
-
-  // const [cycles, setCycles] = useState<Cycle[]>([])
 
   const [cyclesState, dispatch] = useReducer(cyclesReducer, {
     cycles: [],
@@ -48,10 +46,8 @@ export function CyclesContextProvider ({ children }: CyclesContextProviderProps)
   )
 
 
-  const [activeCycle, setActiveCycle] = useState<string | null>(null)
-
-  const { cycles, nowActiveCycle } = cyclesState
-  const nowActiveCycle = cycles.find(cycle => cycle.id === activeCycle)
+  const { cycles, activeCycleId } = cyclesState
+  const nowActiveCycle = cycles.find(cycle => cycle.id === activeCycleId)
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(() => {
     if(nowActiveCycle) {
       return differenceInSeconds(new Date(), new Date(nowActiveCycle.startDate))
@@ -68,8 +64,6 @@ export function CyclesContextProvider ({ children }: CyclesContextProviderProps)
 
   
 
-
-
   function createNewCycle (data: CreateCycleData) {
     const id = String(new Date().getTime())
  
@@ -85,10 +79,7 @@ export function CyclesContextProvider ({ children }: CyclesContextProviderProps)
    }
  
    function interruptedCycle () {
-
     dispatch(interruptedCycleAction())
-   
-     setActiveCycle(null)
    }
 
   
@@ -100,13 +91,12 @@ export function CyclesContextProvider ({ children }: CyclesContextProviderProps)
      setAmountSecondsPassed(seconds)
   }
 
-
   return (
     
     <CyclesContext.Provider 
       value={{
         cycles,
-        activeCycle, 
+        activeCycleId, 
         nowActiveCycle, 
         amountSecondsPassed, 
         markCurrentCyclesAsFinished, 
