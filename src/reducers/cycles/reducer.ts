@@ -54,6 +54,7 @@ export function cyclesReducer(state: CyclesState, action: any) {
       return produce(state, (draft) => {
         draft.activeCycleId = null
         draft.cycles[currentCycleIndex].finishedDate = new Date()
+        window.alert('Seu ciclo em andamento acabou :)')
       })
     }
 

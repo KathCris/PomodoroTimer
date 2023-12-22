@@ -7,8 +7,6 @@ import ptBR from "date-fns/locale/pt-BR"
 export function History() {
   const { cycles } = useContext(CyclesContext)
 
-  console.log('cycles', cycles)
-
   return (
     <HistoryContainer>
       <h1>Meus historico</h1>
