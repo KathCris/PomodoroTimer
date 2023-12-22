@@ -85,6 +85,20 @@ export const Status = styled.span<StatusProps>`
   }
 `
 
+export const InviHeaderHistory = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  span {
+    color: ${props => props.theme['red-500']};
+
+    &:hover{
+      cursor: pointer;
+      color: ${props => props.theme['gray-100']};
+    }
+  }
+`
+
 
 
 

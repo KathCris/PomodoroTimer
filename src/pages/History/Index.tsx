@@ -1,15 +1,31 @@
 import { useContext } from "react";
-import { HistoryContainer, HistoryList, Status } from "./style";
+import { HistoryContainer, HistoryList, InviHeaderHistory, Status } from "./style";
 import { CyclesContext } from "../../contexts/CyclesContext";
 import { formatDistanceToNow } from 'date-fns'
 import ptBR from "date-fns/locale/pt-BR"
+import { Trash } from "phosphor-react";
 
 export function History() {
   const { cycles } = useContext(CyclesContext)
 
+  function handleDeleteHistory () {
+    const choiceUserToHistory = confirm('Tem certeza de que deseja apagar seu historico de ciclos?')
+    if (choiceUserToHistory === true) {
+      localStorage.removeItem('@ignite-timer:cycles-1.0.0');
+      window.location.reload()
+    } else {
+      return 
+    }
+  }
+
   return (
     <HistoryContainer>
-      <h1>Meus historico</h1>
+      <InviHeaderHistory>
+        <h1>Meus historico</h1>
+        <span onClick={() => handleDeleteHistory()}>
+          <Trash size={24} />
+        </span>
+      </InviHeaderHistory>
 
       <HistoryList>
         <table>
@@ -18,7 +34,9 @@ export function History() {
               <th>Tarefa</th>
               <th>Duração</th>
               <th>Início</th>
-              <th>Status</th>
+              <th>
+                Status
+              </th>
             </tr>
           </thead>
 
