@@ -10,6 +10,7 @@ Pomodoro Timer is an application based on the Pomodoro technique, developed as p
 
 - Focus time configuration.
 - Recorded cycle history.
+- Delete cycle history if desired.
 - Form validation with Zod.
 - State management with Context API and Reducer.
 - Use of the Immer library for immutable state manipulation.
