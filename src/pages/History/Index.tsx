@@ -7,6 +7,7 @@ import ptBR from "date-fns/locale/pt-BR"
 export function History() {
   const { cycles } = useContext(CyclesContext)
 
+  console.log('cycles', cycles)
 
   return (
     <HistoryContainer>
@@ -24,7 +25,23 @@ export function History() {
           </thead>
 
           <tbody>
-            {
+            {cycles.length === 0 ? (
+              <tr>
+                <td>
+                  <p>Nenhum ciclo registrado</p>
+                </td>
+                {/* TD'S empty to complete the line  */}
+                <td>
+                  <p></p>
+                </td>
+                <td>
+                  <p></p>
+                </td>
+                <td>
+                  <p></p>
+                </td>
+              </tr>
+            ) : (
               cycles.map(cycle => {
                 return (
                   <tr key={cycle.id}>
@@ -46,6 +63,7 @@ export function History() {
                   </tr>
                 )
               }) 
+            )
             }
           </tbody>
         </table>
