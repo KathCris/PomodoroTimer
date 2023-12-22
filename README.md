@@ -17,7 +17,7 @@ Pomodoro Timer is an application based on the Pomodoro technique, developed as p
 
 ## How to Use
 
-1. Clone the repository: `git clone https://github.com/KathCris/IgniteFeed.git`
+1. Clone the repository: `git clone https://github.com/KathCris/PomodoroTimer.git`
 2. Install dependencies: `npm install`
 3. Start the application: `npm run dev`
 
